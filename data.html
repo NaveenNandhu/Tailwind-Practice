@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Navbar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-rose-500">
+
+    <!-- Navbar Section -->
+    <nav class="bg-rose-200 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-4">
+                    <div>
+                        <a href="#" class="flex items-center py-5 px-2 text-gray-700">
+                            <img src="shopping-cart.png" alt="Shopping_cart" class="h-6 w-6 text-green-500 mr-2">
+                            <span class="font-bold">Budget Maker</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Home</a>
+                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">About</a>
+                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Services</a>
+                        <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Contact</a>
+                    </div>
+                </div>
+
+                <!-- Secondary Nav (Search, Profile) -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#" class="py-5 px-3 text-gray-700 hover:text-gray-900">Login</a>
+                    <a href="#" class="py-2 px-3 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300">Sign Up</a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button class="mobile-menu-button">
+                        <img src="cat.jpg" alt="Menu" class="w-9 h-9 rounded-full">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+    </nav>
+    <div class="w-full flex justify-center mt-9">
+    <div class="w-full h-80 bg-teal-400 shadow-lg rounded-xl mx-10 cursor-pointer">
+        <div class="w-full flex justify-center">
+            <div><h1 class="text-2xl m-3 drop-shadow-xl font-bold">Budget Maker</h1></div>
+        </div>
+        <div class="sm:col-span-3 mx-6">
+            <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Budget Description</label>
+            <div class="mt-2">
+              <input type="text" name="last-name" id="budgetName" autocomplete="family-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" style="text-indent: 10px;">
+            </div>
+          </div>
+          <div class="sm:col-span-3 mt-6 mx-6">
+            <label for="last-name" class="block text-sm font-medium leading-6 text-gray-900">Amount(IN Rupees)</label>
+            <div class="mt-2">
+              <input type="number" name="last-name" id="budgetAmount" autocomplete="family-name" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" style="text-indent: 10px;">
+            </div>
+            <div class="sm:col-span-3 mt-8">
+                  <button name="last-name" id="last-name" class="text-white w-full bg-blue-700 hover:bg-blue-800 cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onclick="addBudget()">Add Budget</button>
+                </div>
+          </div>
+    </div>
+    </div>
+    <div class="w-full flex justify-center mt-9">
+    <div class="w-full h-80 bg-teal-400 shadow-lg rounded-xl mx-10 cursor-pointer">
+        <div class="w-full flex justify-center">
+            <div><h1 class="text-2xl m-3 drop-shadow-xl font-bold">Budget List</h1></div>
+        </div>
+        <ul id="budgetList"></ul>
+    </div>
+    </div>
+    <script>
+        const btn = document.querySelector('.mobile-menu-button');
+        const menu = document.querySelector('.mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+
+        // Function to add the budget to localStorage and display the list
+function addBudget() {
+    const budgetName = document.getElementById("budgetName").value;
+    const budgetAmount = document.getElementById("budgetAmount").value;
+
+    if (budgetName && budgetAmount) {
+        const budgetItem = {
+            id: new Date().getTime(), // Unique ID for each item
+            name: budgetName,
+            amount: budgetAmount
+        };
+
+        let budgets = localStorage.getItem('budgets');
+        budgets = budgets ? JSON.parse(budgets) : [];
+        
+        budgets.push(budgetItem);
+        localStorage.setItem('budgets', JSON.stringify(budgets));
+
+        displayBudgets();
+        document.getElementById("budgetName").value = '';
+        document.getElementById("budgetAmount").value = '';
+    }
+}
+
+// Function to remove a budget item from localStorage
+function removeBudget(id) {
+    let budgets = localStorage.getItem('budgets');
+    budgets = budgets ? JSON.parse(budgets) : [];
+
+    const updatedBudgets = budgets.filter(budget => budget.id !== id);
+    localStorage.setItem('budgets', JSON.stringify(updatedBudgets));
+
+    displayBudgets();
+}
+
+// Function to display budgets from localStorage
+function displayBudgets() {
+    let budgets = localStorage.getItem('budgets');
+    budgets = budgets ? JSON.parse(budgets) : [];
+    
+    const budgetList = document.getElementById("budgetList");
+    budgetList.innerHTML = '';
+
+    budgets.forEach(budget => {
+        const itembox = document.createElement('div');
+        itembox.setAttribute("class","bg-amber-400 p-2 px-4 rounded flex justify-between items-center" );
+        const li = document.createElement('li');
+        li.setAttribute("class","font-bold");
+        li.innerHTML = `${budget.name} - ₹${budget.amount}`;
+        buttondiv = document.createElement('div');
+        buttondiv.innerHTML=`<div><button onclick="removeBudget(${budget.id})" class="bg-red-800 rounded p-2">Remove</button></div>`;
+        budgetList.appendChild(itembox);
+        itembox.appendChild(li);
+        itembox.appendChild(buttondiv);
+        
+    });
+}
+
+// Display budgets on page load
+window.onload = function() {
+    displayBudgets();
+};
+
+
+    </script>
+
+</body>
+</html>
